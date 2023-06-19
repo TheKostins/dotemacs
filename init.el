@@ -163,22 +163,19 @@
   (doom-themes-org-config))
 
 (set-face-attribute 'default nil
-		    :font "JetBrains Mono"
-		    :height 120
-		    :weight 'medium)
+                    :font "JetBrains Mono"
+                    :height 120)
 (set-face-attribute 'variable-pitch nil
-		    :font "DejaVu Sans"
-		    :height  120
-		    :weight 'medium)
+                    :font "DejaVu Sans"
+                    :height  120)
 (set-face-attribute 'fixed-pitch nil
-		    :font "JetBrains Mono"
-		    :height 120
-		    :weight 'medium)
+                    :font "JetBrains Mono"
+                    :height 120)
 ;; Makes commented text and keywords italics.
 ;; This is working in emacsclient but not emacs.
 ;; Your font must have an italic face available.
 (set-face-attribute 'font-lock-comment-face nil
-		    :slant 'italic)
+                    :slant 'italic)
 ;; This sets the default font on all graphical frames created after restarting Emacs.
 ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
 ;; are not right unless I also add this method of setting the default font.
@@ -206,29 +203,32 @@
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
 
+(defun my/org-setup-faces ()
+  (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+  (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+
 (defun my/org-mode-setup ()
+  (my/org-setup-faces)
   (org-indent-mode)
   (variable-pitch-mode 1)
   (visual-line-mode 1))
 
 (use-package org
+  :demand t
   :hook (org-mode . my/org-mode-setup))
-
 (use-package org-faces
   :elpaca nil
   :after org
-  :custom-face
-  (org-block           ((nil (:inherit fixed-pitch :foreground nil))))
-  (org-code            ((nil (:inherit (shadow fixed-pitch)))))
-  (org-table           ((nil (:inherit fixed-pitch))))
-  (org-verbatim        ((nil (:inherit (shadow fixed-pitch)))))
-  (org-special-keyword ((nil (:inherit (font-lock-comment-face fixed-pitch)))))
-  (org-meta-line       ((nil (:inherit (font-lock-comment-face fixed-pitch)))))
-  (org-checkbox        ((nil (:inherit fixed-pitch))))
-  (org-formula         ((nil (:inherit fixed-pitch))))
-  (line-number         ((nil (:inherit fixed-pitch))))
-  (line-number-current-line ((nil (:inherit fixed-pitch))))
-  (org-indent ((nil (:inherit (org-hide fixed-pitch))))))
+  :demand t)
 
 (use-package corfu
   :elpaca (:files (:defaults "extensions/*")) 
@@ -320,7 +320,13 @@
   :init
   (marginalia-mode))
 
-(use-package consult)
+(use-package consult
+  :after meow
+  :init
+  (recentf-mode 1)
+  :bind
+  ("C-c b b" . consult-buffer)
+  ("C-c s b" . consult-line))
 
 (use-package orderless
   :demand t
@@ -400,6 +406,7 @@
     (add-to-list 'completion-at-point-functions capf)))
 
 (use-package yasnippet
+  :diminish t
   :config (yas-global-mode 1))
 (use-package yasnippet-snippets)
 
@@ -424,3 +431,5 @@
         `(("." . ,(no-littering-expand-var-file-name "backup-file/")))))
 
 (use-package magit)
+
+(use-package fish-mode)
