@@ -234,7 +234,7 @@ Setup keymap
     ;; per mode with `ligature-mode'.
     (global-ligature-mode t))
 #+end_src
-** Orgn
+** Org
 #+begin_src emacs-lisp
   (defun my/org-setup-faces ()
     (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
@@ -490,7 +490,20 @@ Keep folders clean
           backup-directory-alist
           `(("." . ,(no-littering-expand-var-file-name "backup-file/")))))
 #+end_src
-
+** Windmove
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c w k") 'windmove-up)
+  (global-set-key (kbd "C-c w j") 'windmove-down)
+  (global-set-key (kbd "C-c w h") 'windmove-left)
+  (global-set-key (kbd "C-c w l") 'windmove-right)
+  (global-set-key (kbd "C-c w d") 'delete-window)
+  (global-set-key (kbd "C-c w |") 'split-window-right)
+  (global-set-key (kbd "C-c w -") 'split-window-below)
+  (global-set-key (kbd "C-c w H") 'windmove-swap-states-left)
+  (global-set-key (kbd "C-c w L") 'windmove-swap-states-right)
+  (global-set-key (kbd "C-c w K") 'windmove-swap-states-up)
+  (global-set-key (kbd "C-c w J") 'windmove-swap-states-down)
+#+end_src
 * Project management
 ** Magit
 #+begin_src emacs-lisp
@@ -498,6 +511,7 @@ Keep folders clean
 #+end_src
 
 * Language support
+** Fish
 #+begin_src emacs-lisp
 (use-package fish-mode)
 #+end_src

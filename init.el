@@ -430,6 +430,18 @@
         backup-directory-alist
         `(("." . ,(no-littering-expand-var-file-name "backup-file/")))))
 
+(global-set-key (kbd "C-c w k") 'windmove-up)
+(global-set-key (kbd "C-c w j") 'windmove-down)
+(global-set-key (kbd "C-c w h") 'windmove-left)
+(global-set-key (kbd "C-c w l") 'windmove-right)
+(global-set-key (kbd "C-c w d") 'delete-window)
+(global-set-key (kbd "C-c w |") 'split-window-right)
+(global-set-key (kbd "C-c w -") 'split-window-below)
+(global-set-key (kbd "C-c w H") 'windmove-swap-states-left)
+(global-set-key (kbd "C-c w L") 'windmove-swap-states-right)
+(global-set-key (kbd "C-c w K") 'windmove-swap-states-up)
+(global-set-key (kbd "C-c w J") 'windmove-swap-states-down)
+
 (use-package magit)
 
 (use-package fish-mode)
