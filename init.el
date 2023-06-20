@@ -1,3 +1,7 @@
+(setq custom-file
+      (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file)
+
 (defvar elpaca-installer-version 0.4)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
