@@ -1,3 +1,4 @@
+
 #+TITLE: Emacs configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 
@@ -196,24 +197,61 @@ Setup keymap
 #+end_src
 ** Fonts
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil
-                      :font "JetBrains Mono"
-                      :height 120)
-  (set-face-attribute 'variable-pitch nil
-                      :font "DejaVu Sans"
-                      :height  120)
-  (set-face-attribute 'fixed-pitch nil
-                      :font "JetBrains Mono"
-                      :height 120)
+  (defmacro my/set-font-function (face)
+    `(lambda (sym val)
+      (let ((font (car val))
+             (height (cdr val)))
+         (set-face-attribute ,face nil
+                             :font font
+                             :height (* height 10))
+         (set-default sym val))))
+
+  (defgroup user-font nil
+    "Customize fonts")
+
+  (defcustom fixed-pitch-font '("DejaVu Sans Mono" . 13)
+    "Font used for displayind code & etc."
+    :type '(cons string integer)
+    :group 'user-font
+    :set (my/set-font-function 'fixed-pitch)
+    :initialize #'custom-initialize-set)
+
+  (defcustom variable-pitch-font '("DejaVu Sans" . 13)
+    "Font used for displayind code & etc."
+    :type '(cons string integer)
+    :group 'user-font
+    :set (my/set-font-function 'variable-pitch)
+    :initialize #'custom-initialize-set)
+
+  (defcustom default-font '("DejaVu Sans Mono" . 13)
+    "Font used for displayind code & etc."
+    :type '(cons string integer)
+    :group 'user-font
+    :set (lambda (sym var)
+           (let ((font (car var))
+                 (height (cdr var)))
+             (add-to-list 'default-frame-alist `(font . ,(concat font "-" (number-to-string height))))
+             (funcall (my/set-font-function 'default) sym var)))
+    :initialize #'custom-initialize-set)
+
+  ;;(set-face-attribute 'default nil
+  ;;                    :font "JetBrains Mono"
+  ;;                    :height 120)
+  ;;(set-face-attribute 'variable-pitch nil
+  ;;                    :font "DejaVu Sans"
+  ;;                    :height  120)
+  ;;(set-face-attribute 'fixed-pitch nil
+  ;;                    :font "JetBrains Mono"
+  ;;                    :height 120)
   ;; Makes commented text and keywords italics.
   ;; This is working in emacsclient but not emacs.
   ;; Your font must have an italic face available.
-  (set-face-attribute 'font-lock-comment-face nil
-                      :slant 'italic)
+  ;;(set-face-attribute 'font-lock-comment-face nil
+  ;;                    :slant 'italic)
   ;; This sets the default font on all graphical frames created after restarting Emacs.
   ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
   ;; are not right unless I also add this method of setting the default font.
-  (add-to-list 'default-frame-alist '(font . "JetBrains Mono-12"))
+  ;;(add-to-list 'default-frame-alist '(font . "JetBrains Mono-12"))
 
   ;; Uncomment the following line if line spacing needs adjusting.
   ;;(setq-default line-spacing 0.12)
