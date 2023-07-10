@@ -162,7 +162,7 @@
 (use-package doom-themes
   :config
   (setq doom-themes-enable-bold t
-	  doom-themes-enable-italic t)
+    doom-themes-enable-italic t)
   (load-theme 'doom-gruvbox t)
   (doom-themes-org-config))
 
@@ -508,6 +508,36 @@
 (global-set-key (kbd "C-c w K") 'windmove-swap-states-up)
 (global-set-key (kbd "C-c w J") 'windmove-swap-states-down)
 
+(use-package smartparens
+  :diminish smartparens-mode ;; Do not show in modeline
+  :init
+  (require 'smartparens-config)
+  :config
+  (smartparens-global-mode t) ;; These options can be t or nil.
+  (show-smartparens-global-mode t)
+  (setq sp-show-pair-from-inside t
+        sp-escape-quotes-after-insert t
+        sp-highlight-pair-overlay nil
+        sp-highlight-wrap-overlay nil
+        sp-highlight-wrap-tag-overlay nil)
+  :custom-face
+  (sp-show-pair-match-face ((t (:foreground "White")))) ;; Could also have :background "Grey" for example.
+  )
+
+(use-package rainbow-delimiters
+  :diminish t
+  :hook (prog-mode . rainbow-delimiters-mode))
+
 (use-package magit)
 
 (use-package fish-mode)
+
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq backward-delete-char-untabify-method 'hungry)
+
+(use-package highlight-indent-guides
+  :config
+  (setq highlight-indent-guides-method 'character
+        highlight-indent-guides-character ?|)
+  :hook (prog-mode . highlight-indent-guides-mode))

@@ -576,6 +576,30 @@ Keep folders clean
   (global-set-key (kbd "C-c w K") 'windmove-swap-states-up)
   (global-set-key (kbd "C-c w J") 'windmove-swap-states-down)
 #+end_src
+**  Smartparens
+#+begin_src emacs-lisp 
+  (use-package smartparens
+    :diminish smartparens-mode ;; Do not show in modeline
+    :init
+    (require 'smartparens-config)
+    :config
+    (smartparens-global-mode t) ;; These options can be t or nil.
+    (show-smartparens-global-mode t)
+    (setq sp-show-pair-from-inside t
+          sp-escape-quotes-after-insert t
+          sp-highlight-pair-overlay nil
+          sp-highlight-wrap-overlay nil
+          sp-highlight-wrap-tag-overlay nil)
+    :custom-face
+    (sp-show-pair-match-face ((t (:foreground "White")))) ;; Could also have :background "Grey" for example.
+    )
+#+end_src
+** Rainbow Delimiters
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :diminish t
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
 * Project management
 ** Magit
 #+begin_src emacs-lisp
@@ -586,4 +610,20 @@ Keep folders clean
 ** Fish
 #+begin_src emacs-lisp
 (use-package fish-mode)
+#+end_src
+
+* Formatting and indentation
+** No tabs
+#+begin_src emacs-lisp 
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 4)
+  (setq backward-delete-char-untabify-method 'hungry)
+#+end_src
+** Highligh Indentation
+#+begin_src emacs-lisp 
+  (use-package highlight-indent-guides
+    :config
+    (setq highlight-indent-guides-method 'character
+          highlight-indent-guides-character ?|)
+    :hook (prog-mode . highlight-indent-guides-mode))
 #+end_src
