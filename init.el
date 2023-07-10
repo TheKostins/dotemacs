@@ -162,7 +162,7 @@
 (use-package doom-themes
   :config
   (setq doom-themes-enable-bold t
-	doom-themes-enable-italic t)
+	  doom-themes-enable-italic t)
   (load-theme 'doom-gruvbox t)
   (doom-themes-org-config))
 
@@ -283,6 +283,8 @@
 (use-package corfu-popupinfo
   :elpaca nil
   :after corfu
+  :custom
+  (corfu-popupinfo-delay 0)
   :init
   (corfu-popupinfo-mode 1)
   :bind (:map corfu-popupinfo-map
@@ -304,6 +306,14 @@
   ;; Enable indentation+completion using the TAB key.
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
+
+(use-package kind-icon
+  :ensure t
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package vertico
   :elpaca (:files (:defaults "extensions/*"))
@@ -434,7 +444,8 @@
                                         ;; enable initialism by default for symbols
                                         (command (styles +orderless-with-initialism))
                                         (variable (styles +orderless-with-initialism))
-                                        (symbol (styles +orderless-with-initialism)))
+                                        (symbol (styles +orderless-with-initialism))
+					(eglot (styles . (orderless flex))))
         orderless-component-separator #'orderless-escapable-split-on-space ;; allow escaping space with backslash!
         orderless-style-dispatchers (list #'+orderless-consult-dispatch
                                           #'orderless-affix-dispatch)))
@@ -450,6 +461,20 @@
   :diminish t
   :config (yas-global-mode 1))
 (use-package yasnippet-snippets)
+
+(defun my/eglot-setup-completion ()
+  (setq-local completion-at-point-functions
+    	      `(,(cape-super-capf
+		  #'cape-file
+		  (cape-company-to-capf #'company-yasnippet)
+    		  (cape-capf-buster #'eglot-completion-at-point)
+		  #'cape-dabbrev))))
+(add-hook 'eglot-managed-mode-hook #'my/eglot-setup-completion)
+(use-package project :demand t)
+(use-package external-completion :demand t)
+(use-package eglot
+  :demand t
+  :after (project projectile external-completion cape))
 
 (use-package company
   :config
