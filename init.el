@@ -484,7 +484,7 @@
 (use-package external-completion :demand t)
 (use-package eglot
   :demand t
-  :after (project projectile external-completion cape meow)
+  :after (project external-completion cape meow)
   :bind (:map eglot-mode-map
          ("C-c l a a" . eglot-code-actions)
          ("C-c l r" . eglot-rename)
@@ -549,6 +549,13 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package magit)
+
+(use-package projectile
+  :demand t
+  :config (projectile-mode +1))
+(use-package consult-project-extra
+  :demand t
+  :bind (("C-c p f" . consult-project-extra-find)))
 
 (use-package fish-mode)
 
