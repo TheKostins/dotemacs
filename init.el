@@ -2,6 +2,12 @@
       (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
 
+(let*
+     ((fish-path (shell-command-to-string "/opt/homebrew/bin/fish -i -c \"echo -n \\$PATH[1]; for val in \\$PATH[2..-1];echo -n \\\":\\$val\\\";end\""))
+      (full-path (append exec-path (split-string fish-path ":"))))
+   (setenv "PATH" fish-path)
+   (setq exec-path full-path))
+
 (defvar elpaca-installer-version 0.5)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -160,19 +166,19 @@
 (setq frame-resize-pixelwise t)
 
 (use-package doom-themes
-  :demand t
-  :init
-  (setq doom-themes-enable-bold t
-    doom-themes-enable-italic t)
-  (load-theme 'doom-gruvbox t)
-  (doom-themes-org-config))
+   :demand t
+   :init
+   (setq doom-themes-enable-bold t
+     doom-themes-enable-italic t)
+   (load-theme 'doom-monokai-pro t)
+   (doom-themes-org-config))
 
 (use-package nerd-icons
-  :demand t)
+   :demand t)
 
-(use-package doom-modeline
-  :demand t
-  :init (doom-modeline-mode 1))
+ (use-package doom-modeline
+   :demand t
+   :init (doom-modeline-mode 1))
 
 (defmacro my/set-font-function (face)
   `(lambda (sym val)
@@ -287,7 +293,21 @@
   (corfu-auto-prefix 2) 
   (corfu-auto t)
   :init
-  (global-corfu-mode))
+  (global-corfu-mode)
+  :config
+  ;; Enable Corfu more generally for every minibuffer, as long as no other
+  ;; completion UI is active. If you use Mct or Vertico as your main minibuffer
+  ;; completion UI. From
+  ;; https://github.com/minad/corfu#completing-with-corfu-in-the-minibuffer
+  (defun corfu-enable-always-in-minibuffer ()
+    "Enable Corfu in the minibuffer if Vertico/Mct are not active."
+    (unless (or (bound-and-true-p mct--active) ; Useful if I ever use MCT
+                (bound-and-true-p vertico--input))
+      (setq-local corfu-auto nil)       ; Ensure auto completion is disabled
+      (corfu-mode 1)))
+  (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
+  ;; Setup lsp to use corfu for lsp completion
+  )
 
 
 (use-package corfu-popupinfo
@@ -472,29 +492,21 @@
   :config (yas-global-mode 1))
 (use-package yasnippet-snippets)
 
-(defun my/eglot-setup-completion ()
-  (setq-local completion-at-point-functions
-    	      `(,(cape-super-capf
-		          #'cape-file
-		          (cape-company-to-capf #'company-yasnippet)
-                  (cape-capf-buster #'eglot-completion-at-point)
-		          #'cape-dabbrev))))
-(add-hook 'eglot-managed-mode-hook #'my/eglot-setup-completion)
-(use-package project :demand t)
-(use-package external-completion :demand t)
-(use-package eglot
-  :demand t
-  :after (project external-completion cape meow)
-  :bind (:map eglot-mode-map
-         ("C-c l a a" . eglot-code-actions)
-         ("C-c l r" . eglot-rename)
-         ("C-c l f r" . xref-find-reference)
-         ("C-c l f d" . eglot-find-declaration)
-         ("C-c l f i" . eglot-find-implementation)
-         ("C-c l f t" . eglot-find-typeDefinition))
+(use-package lsp-mode
+  :custom
+  (lsp-keymap-prefix "C-c l")
+  (lsp-completion-provider :none)
+  (corfu-echo-documentation nil)
+  :commands lsp
   :config
-  (meow-leader-define-key
-   '("l" . "C-c l")))
+  (defun my/corfu-setup-lsp ()
+    "Use orderless completion style with lsp-capf instead of the
+default lsp-passthrough."
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless flex)))
+  :hook (lsp-completion-mode . my/corfu-setup-lsp))
+(use-package lsp-ui
+  :commands lsp-ui-mode)
 
 (use-package company
   :config
@@ -569,6 +581,8 @@
                           (clj-refactor-mode 1)
                           (cljr-add-keybindings-with-prefix "C-c r"))))
 (use-package clojure-snippets)
+
+(use-package rustic)
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
