@@ -2,12 +2,6 @@
       (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
 
-(let*
-     ((fish-path (shell-command-to-string "/opt/homebrew/bin/fish -i -c \"echo -n \\$PATH[1]; for val in \\$PATH[2..-1];echo -n \\\":\\$val\\\";end\""))
-      (full-path (append exec-path (split-string fish-path ":"))))
-   (setenv "PATH" fish-path)
-   (setq exec-path full-path))
-
 (defvar elpaca-installer-version 0.5)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -164,6 +158,9 @@
 
 ;; Allow normal resizing
 (setq frame-resize-pixelwise t)
+
+(use-package highlight-numbers
+  :hook (prog-mode . highlight-numbers-mode))
 
 (use-package doom-themes
    :demand t
@@ -499,6 +496,8 @@
   (corfu-echo-documentation nil)
   :commands lsp
   :config
+  (meow-leader-define-key
+   '("l" . "C-c l"))
   (defun my/corfu-setup-lsp ()
     "Use orderless completion style with lsp-capf instead of the
 default lsp-passthrough."
@@ -582,6 +581,8 @@ default lsp-passthrough."
                           (cljr-add-keybindings-with-prefix "C-c r"))))
 (use-package clojure-snippets)
 
+(use-package lua-mode)
+
 (use-package rustic)
 
 (setq-default indent-tabs-mode nil)
@@ -593,3 +594,6 @@ default lsp-passthrough."
   (setq highlight-indent-guides-method 'character
         highlight-indent-guides-character ?|)
   :hook (prog-mode . highlight-indent-guides-mode))
+
+(use-package format-all
+  :hook (prog-mode . format-all-mode))

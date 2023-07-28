@@ -8,7 +8,7 @@
         (expand-file-name "custom.el" user-emacs-directory))
   (load custom-file)
 #+end_src
-** Load exec path from shell
+** COMMENT Load exec path from shell
 #+begin_src emacs-lisp
    (let*
         ((fish-path (shell-command-to-string "/opt/homebrew/bin/fish -i -c \"echo -n \\$PATH[1]; for val in \\$PATH[2..-1];echo -n \\\":\\$val\\\";end\""))
@@ -194,6 +194,11 @@ Setup keymap
 
   ;; Allow normal resizing
   (setq frame-resize-pixelwise t)
+#+end_src
+*** Higlight Numbers
+#+begin_src emacs-lisp 
+  (use-package highlight-numbers
+    :hook (prog-mode . highlight-numbers-mode))
 #+end_src
 ** Themes
 #+begin_src emacs-lisp
@@ -586,6 +591,8 @@ Setup keymap
     (corfu-echo-documentation nil)
     :commands lsp
     :config
+    (meow-leader-define-key
+     '("l" . "C-c l"))
     (defun my/corfu-setup-lsp ()
       "Use orderless completion style with lsp-capf instead of the
   default lsp-passthrough."
@@ -696,6 +703,11 @@ Keep folders clean
                             (cljr-add-keybindings-with-prefix "C-c r"))))
   (use-package clojure-snippets)
 #+end_src
+** Lua
+#+begin_src emacs-lisp
+  (use-package lua-mode)
+#+end_src
+
 ** Rust
 #+begin_src emacs-lisp 
   (use-package rustic)
@@ -715,4 +727,9 @@ Keep folders clean
     (setq highlight-indent-guides-method 'character
           highlight-indent-guides-character ?|)
     :hook (prog-mode . highlight-indent-guides-mode))
+#+end_src
+** Format all
+#+begin_src emacs-lisp
+  (use-package format-all
+    :hook (prog-mode . format-all-mode))
 #+end_src
